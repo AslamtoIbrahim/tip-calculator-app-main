@@ -1,21 +1,44 @@
 const billInput = document.getElementById('bill-input');
 const percentage = document.querySelector('.percentage');
 const buttons = percentage.querySelectorAll('button');
-const custom = document.getElementById('custom');
+const customTip = document.getElementById('custom');
 const billError = document.getElementById('billError');
 const peopleError = document.getElementById('peopleError');
-const numbPeople = document.getElementById('numb-people');
+const numberOfPeople = document.getElementById('numb-people');
 const resultAmount = document.querySelector('.result-amount');
 const resultTotal = document.querySelector('.result-total');
 const restButton = document.querySelector('.rest');
 let bill;
 let tip;
+let numberPeople;
 
-numbPeople.addEventListener('input', function (event) {
+billInput.addEventListener('input', function(e){
+    numberPeople = getNumberPeopleValue();
     bill = getBillValue();
     tip = getTipValue();
-    resultTotal.textContent = tip;
-})
+    calculateTipAndTotal();
+    showErrorBorder(customTip);
+});
+
+
+getTipValue();
+
+customTip.addEventListener('input', function (event) {
+    tip = event.target.value;
+    hideErrorBorder(customTip);
+    resetButtonsColor();
+
+    numberPeople = getNumberPeopleValue();
+    bill = getBillValue();
+    calculateTipAndTotal();
+});
+
+numberOfPeople.addEventListener('input', function (event) {
+    numberPeople = getNumberPeopleValue();
+    bill = getBillValue();
+    tip = getTipValue();
+    calculateTipAndTotal();
+});
 
 
 function getBillValue() {
@@ -25,25 +48,24 @@ function getBillValue() {
         return 0;
     }
 
-
     hideErrorBorder(billInput);
     hideErrorMessage(billError);
     return billInput.value;
 }
 
-getTipValue();
+
 
 function getTipValue() {
     const value = getvalueFromButtons();
+    
+    console.log('before', value);
     if (value === 0) {
-        showErrorBorder(custom);
+        showErrorBorder(customTip);
+        return 0;
     }
-    custom.addEventListener('input', function (event) {
-        value = event.target.value;
-        hideErrorBorder(custom);
-        resetButtonsColor();
-    });
-
+    
+    console.log('after', value);
+    hideErrorBorder(customTip);
     return value;
 }
 function getvalueFromButtons() {
@@ -74,6 +96,18 @@ function resetButtonsColor() {
     });
 }
 
+function getNumberPeopleValue() {
+    if (isEmpty(numberOfPeople)) {
+        showErrorBorder(numberOfPeople);
+        showErrorMessage(peopleError);
+        return 0;
+    }
+
+    hideErrorBorder(numberOfPeople);
+    hideErrorMessage(peopleError);
+    return numberOfPeople.value;
+}
+
 function isEmpty(ele) {
     return ele.value.trim() == '';
 }
@@ -94,4 +128,22 @@ function showErrorMessage(ele, message = 'can\'t be zero') {
 }
 function hideErrorMessage(ele) {
     ele.style.display = 'none';
+}
+
+
+// calculate tip and total for person
+
+function calculateTipAndTotal() {
+    if (bill === 0 || numberPeople === 0 || tip === 0) {
+        console.log(tip);
+        return;
+    }
+
+    const tipAmount = (bill * tip) / 100; 
+    const perPersonAmount = tipAmount / numberPeople;
+
+    const totalAmount = bill + tipAmount;
+
+    resultAmount.textContent = `$${perPersonAmount.toFixed(2)}`;
+    resultTotal.textContent = `$${totalAmount.toFixed(2)}`;
 }
