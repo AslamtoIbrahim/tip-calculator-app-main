@@ -17,6 +17,9 @@
   /* Font */
   --font-family: "Space Mono", monospace;
   --font-weight-bold: 700;
+
+  /* error color */
+  --color-error: rgb(248, 103, 103);
 }
 
 * {
@@ -68,6 +71,11 @@ main {
   width: 100%;
 }
 
+.bill-and-error{
+  display: flex;
+  justify-content: space-between;
+}
+
 label {
   color: var(--dark-grayish-cyan);
   margin-bottom: 0.3rem;
@@ -91,6 +99,12 @@ input:focus,
   outline: none;
   border: 0.125rem solid var(--strong-cyan);
 }
+
+/* remove arrow p and down in inputs */
+input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+}
+
 
 .inupt-icon {
   position: relative;
@@ -132,13 +146,26 @@ input:focus,
   color: var(--very-dark-cyan);
 }
 
+/* change background color and color text while clicking */
+.change-background{
+  /* background-color: var(--strong-cyan);
+  color: var(--very-dark-cyan); */
+  background: #000;
+}
+
 .lebel-and-error {
   display: flex;
   justify-content: space-between;
 }
 
 .error {
-  color: rgb(248, 103, 103);
+  color: var( --color-error);
+  display: none;
+}
+
+/* add border color error */
+.border-error{
+  border: 0.125rem solid var( --color-error);
 }
 
 .output-container {
@@ -152,11 +179,10 @@ input:focus,
   gap: 1rem;
 }
 
-.tip-amount-person{
-    margin-bottom: 2rem;
+.tip-amount-person {
+  margin-bottom: 2rem;
 }
 
- 
 .tip-amount-person,
 .total-person {
   display: flex;
@@ -173,22 +199,42 @@ input:focus,
   color: var(--grayish-cyan);
 }
 
-.result-amount, .result-total{
-    color: var(--strong-cyan);
-    font-size: 2rem;
+.result-amount,
+.result-total {
+  color: var(--strong-cyan);
+  font-size: 2rem;
 }
 
-.rest{
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.2rem;
-    background-color: var(--strong-cyan);
-    font-family: var(--font-family);
-    text-transform: uppercase;
-    color: var(--very-dark-cyan);
-    cursor: pointer;
+.rest {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.2rem;
+  background-color: var(--strong-cyan);
+  font-family: var(--font-family);
+  text-transform: uppercase;
+  color: var(--very-dark-cyan);
+  cursor: pointer;
 }
 
-.rest:hover{
-    background-color: var(--light-strong-cyan);
+.rest:hover {
+  background-color: var(--light-strong-cyan);
+}
+
+@keyframes shake {
+  0%,
+  100%,
+  50% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(0.3rem);
+  }
+  75% {
+    transform: translateX(-0.3rem);
+  }
+}
+
+.shake {
+  display: inline-block;
+  animation: shake 0.2s ease-in-out;
 }
