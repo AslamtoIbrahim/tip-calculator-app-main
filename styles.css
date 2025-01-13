@@ -31,7 +31,6 @@
 body {
   height: 100vh;
   width: 100vw;
-  font-size: var(--font-size-body-copy);
   font-family: var(--font-family);
   background-color: var(--light-grayish-cyan);
 }
@@ -246,10 +245,7 @@ input::-webkit-inner-spin-button {
 }
 
 @media screen and (max-width: 40rem) {
-  :root {
-    /* Typography */
-    --font-size-body-copy: 1rem;
-  }
+   
   .img-logo {
     margin-top: 3rem;
   }
