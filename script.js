@@ -1,43 +1,44 @@
 const billInput = document.getElementById('bill-input');
 const percentage = document.querySelector('.percentage');
 const buttons = percentage.querySelectorAll('button');
-const customTip = document.getElementById('custom');
+const customTipInput = document.getElementById('custom');
 const billError = document.getElementById('billError');
 const peopleError = document.getElementById('peopleError');
-const numberOfPeople = document.getElementById('numb-people');
+const numberOfPeopleInput = document.getElementById('numb-people');
 const resultAmount = document.querySelector('.result-amount');
 const resultTotal = document.querySelector('.result-total');
 const restButton = document.querySelector('.rest');
-let bill;
-let tip;
-let numberPeople;
+let bill = 0.00;
+let tip = 0.00;
+let numberPeople = 0;
 
-billInput.addEventListener('input', function(e){
-    numberPeople = getNumberPeopleValue();
-    bill = getBillValue();
-    tip = getTipValue();
+
+function calculateAll() {
+    console.log('bill: ', bill);
+    console.log('tip: ', tip);
+    console.log('numberPeople: ', numberPeople);
+
+    getBillValue();
+    getTipValue();
+    getNumberPeopleValue();
     calculateTipAndTotal();
-    showErrorBorder(customTip);
+}
+billInput.addEventListener('input', function (e) {
+    calculateAll();
 });
 
 
-getTipValue();
+getvalueFromButtons();
 
-customTip.addEventListener('input', function (event) {
-    tip = event.target.value;
-    hideErrorBorder(customTip);
+customTipInput.addEventListener('input', function (event) {
+    tip = parseFloat(customTipInput.value);
+    calculateAll();
     resetButtonsColor();
 
-    numberPeople = getNumberPeopleValue();
-    bill = getBillValue();
-    calculateTipAndTotal();
 });
 
-numberOfPeople.addEventListener('input', function (event) {
-    numberPeople = getNumberPeopleValue();
-    bill = getBillValue();
-    tip = getTipValue();
-    calculateTipAndTotal();
+numberOfPeopleInput.addEventListener('input', function (event) {
+    calculateAll();
 });
 
 
@@ -45,40 +46,42 @@ function getBillValue() {
     if (isEmpty(billInput)) {
         showErrorBorder(billInput);
         showErrorMessage(billError);
-        return 0;
+        return;
     }
 
     hideErrorBorder(billInput);
     hideErrorMessage(billError);
-    return billInput.value;
+    bill = parseFloat(billInput.value);
 }
 
 
 
 function getTipValue() {
-    const value = getvalueFromButtons();
-    
-    console.log('before', value);
-    if (value === 0) {
-        showErrorBorder(customTip);
-        return 0;
+
+    //📗 this is if the custom input is empty and the buttons are not clicked
+    if (isEmpty(customTipInput) && tip === 0) {
+        showCustomBorder();
+        return;
     }
-    
-    console.log('after', value);
-    hideErrorBorder(customTip);
-    return value;
+
+    hideCustomBorder();
 }
 function getvalueFromButtons() {
-    let value = 0;
-    const percent = [5, 10, 15, 25, 50];
+
+    const percent = [5.00, 10.00, 15.00, 25.00, 50.00];
     buttons.forEach((button, index) => {
         button.addEventListener('click', (event) => {
-            value = percent[index];
+            tip = parseFloat(percent[index]);
+
             changeButtonsColor(button);
+            hideCustomBorder();
+            customTipInput.value = '';
+            calculateAll();
         });
     });
 
-    return value;
+
+
 }
 
 function changeButtonsColor(button) {
@@ -97,19 +100,19 @@ function resetButtonsColor() {
 }
 
 function getNumberPeopleValue() {
-    if (isEmpty(numberOfPeople)) {
-        showErrorBorder(numberOfPeople);
+    if (isEmpty(numberOfPeopleInput)) {
+        showErrorBorder(numberOfPeopleInput);
         showErrorMessage(peopleError);
-        return 0;
+        return;
     }
 
-    hideErrorBorder(numberOfPeople);
+    hideErrorBorder(numberOfPeopleInput);
     hideErrorMessage(peopleError);
-    return numberOfPeople.value;
+    numberPeople = parseInt(numberOfPeopleInput.value);
 }
 
 function isEmpty(ele) {
-    return ele.value.trim() == '';
+    return ele.value.trim() == '' || ele.value.trim() == 0;
 }
 
 function showErrorBorder(input) {
@@ -130,20 +133,50 @@ function hideErrorMessage(ele) {
     ele.style.display = 'none';
 }
 
+// chang custom border
+function showCustomBorder() {
+    customTipInput.style.border = '0.125rem solid var( --color-error)';
+}
+function hideCustomBorder() {
+    customTipInput.style.border = 'none';
+}
+
 
 // calculate tip and total for person
 
 function calculateTipAndTotal() {
     if (bill === 0 || numberPeople === 0 || tip === 0) {
-        console.log(tip);
         return;
     }
 
-    const tipAmount = (bill * tip) / 100; 
+    const tipAmount = (bill * tip) / 100;
     const perPersonAmount = tipAmount / numberPeople;
 
-    const totalAmount = bill + tipAmount;
+    const totalAmount = (bill + tipAmount) / numberPeople;
 
-    resultAmount.textContent = `$${perPersonAmount.toFixed(2)}`;
-    resultTotal.textContent = `$${totalAmount.toFixed(2)}`;
+
+    if (!isNaN(perPersonAmount) && !isNaN(totalAmount)) {
+        resultAmount.textContent = `$${perPersonAmount.toFixed(2)}`;
+        resultTotal.textContent = `$${totalAmount.toFixed(2)}`;
+    } else {
+        resultAmount.textContent = `Error`;
+        resultTotal.textContent = `Error`;
+    }
 }
+
+
+// reset everything
+
+restButton.addEventListener('click', function () {
+    bill = 0.00;
+    tip = 0.00;
+    numberPeople = 0;
+    billInput.value = '';
+    customTipInput.value = '';
+    numberOfPeopleInput.value = '';
+    billError.textContent = '';
+    peopleError.textContent = '';
+    resultAmount.textContent = '$0.00';
+    resultTotal.textContent = '$0.00';
+    resetButtonsColor();
+});
